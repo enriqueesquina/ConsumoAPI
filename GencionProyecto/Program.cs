@@ -1,4 +1,5 @@
 using GencionProyecto.Components;
+using GencionProyecto.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddScoped(o => new HttpClient
 {
     BaseAddress = new Uri("https://localhost:7232")
 });
+
+builder.Services.AddScoped<AuthServices>();
 
 var app = builder.Build();
 
