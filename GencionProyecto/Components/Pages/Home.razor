@@ -1,7 +1,46 @@
 ﻿@page "/"
+@using GencionProyecto.DTO
+@using GencionProyecto.Services
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Login</PageTitle>
 
-<h1>Hello, world!</h1>
+@inject NavigationManager navigationManager
+@inject AuthServices authServices
 
-Welcome to your new app.
+@* FormName="loginForm" *@
+
+<EditForm Model="usuarioSession" OnValidSubmit="Login" FormName="loginForm">
+    <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <InputText class="form-control" @bind-Value="usuarioSession.Correo" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <InputText class="form-control" @bind-Value="usuarioSession.Clave" /> 
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-3">@errorMessage</div>
+    }
+</EditForm>
+
+@code {
+    private UsuarioSession usuarioSession = new UsuarioSession(); 
+    private string errorMessage;
+
+    private async Task Login()
+    {
+        var token = await authServices.Login(usuarioSession);
+        if (string.IsNullOrEmpty(token))
+        {
+            errorMessage = "Credenciales incorrectas";
+            return;
+        }
+
+        await authServices.SetToken(token);
+        navigationManager.NavigateTo("/ weather");
+    }
+}
